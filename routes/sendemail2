@@ -1,0 +1,56 @@
+var nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',//smtp.gmail.com  //in place of service use host...
+  secure: false,//true
+  port: 25,//465
+  auth: {
+    user: 'example@gmail.com',
+    pass: 'password'
+  }, tls: {
+    rejectUnauthorized: false
+  }
+});
+
+transporter.sendEMail = function (mailRequest) {
+  return new Promise(function (resolve, reject) {
+    transporter.sendMail(mailRequest, (error, info) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve("The message was sent!");
+      }
+    });
+  });
+}
+
+module.exports = transporter;
+
+///////////////////////////////////////////////////////////////////////////////////
+
+//import transporter JS file
+const mail = require('../utils/mail');
+let htmlContent = `
+                <h1><strong>Contact Form</strong></h1>
+                <p>Hi,</p>
+                <p>${name} contacted with the following Details</p>
+                <br/>
+                <p>Email: ${email}</p>
+                <p>Phone: ${phone}</p>
+                <p>Company Name: ${companyName}</p>
+                <p>Message: ${message}</p>
+                `
+    let mailOptions = {
+        from: "Example <example@gmail.com>",
+        to: "me@gmail.com",
+        subject: "Mail Test",
+        text: "",
+        html: htmlContent
+    }
+
+mail.sendMail(mailOptions)
+    .then(function (email) {
+        res.status(200).json({ success: true, msg: 'Mail sent' });
+    }).catch(function (exception) {
+        res.status(200).json({ success: false, msg: exception });
+    });

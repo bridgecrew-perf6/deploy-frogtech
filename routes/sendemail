@@ -1,0 +1,40 @@
+const config = require('../../config');
+const http = require('http');
+const nodemailer = require('nodemailer');
+
+module.exports = {
+
+    sendMail: function (params) {
+        return new Promise((resolve, reject) => {
+
+            var transporter = nodemailer.createTransport({
+                //service: 'gmail', //I tried with this too
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
+                auth: {
+                    user: params.fromMail,
+                    pass: params.fromPass
+                }
+            });
+
+            var mailOptions = {
+                from: params.fromMail,
+                to: params.toMailList,
+                subject: params.subject,
+                html: params.mailHtmlContent,
+            };
+
+            transporter.sendMail(mailOptions, function(err, info){
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(info.response);
+                }
+            });
+
+
+        });
+    }
+
+};
